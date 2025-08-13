@@ -7,23 +7,33 @@ def randomgeneration(books: [], count: int):
         return
     randomTBR = random.sample(books, count)
     print(f"You should read: {randomTBR}")
+    regen = input("Would you like to generate another 2 books? ")
+    if regen.lower().strip() == "yes":
+        randomgeneration(books, count)
+    elif regen.lower().strip() == "no":
+        print("Have a nice day!")
+        quit
 
 # introductory statements
 print("Hello! Welcome to the random TBR generator! TBR stands for 'to be read',")
 print("This program will randomly select books from your TBR.")
-print("If you have a Goodreads account, you can upload the filepath to your exported tbr")
+print("If you have a Goodreads or StoryGraph account, you can upload the filepath to your exported tbr")
 count = int(input("To start, how many books would you like to generate? "))
-goodreads = input("Do you have a Goodreads account? ")
+goodreads = input("Do you have a Goodreads or StoryGraph account? ")
 books = []
 
 if goodreads.lower() == 'yes':
-    file = input("Please insert the filepath to exported Goodreads shelf as a .csv file. ")
+    file = input("Please insert the filepath to your exported shelf as a .csv file. ")
     # from https://www.geeksforgeeks.org/python/how-to-read-from-a-file-in-python/#reading-csv-files-in-python
     with open(file, newline='') as csvfile:
-        csvreader = csv.reader(csvfile)
+        csvreader = csv.DictReader(csvfile)
         for row in csvreader:
-            if (row[18] == 'to-read' and row[1]):
-                books.append(row[1])
+            if 'Read Status' in row:
+                if (row['Read Status'] == 'to-read' and row["Title"]):
+                    books.append(row["Title"])
+            elif 'Exclusive Shelf' in row:
+                if (row["Exclusive Shelf"] == 'to-read' and row["Title"]):
+                    books.append(row["Title"])
         randomgeneration(books, count)
 
 if goodreads.lower() == 'no':
